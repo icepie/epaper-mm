@@ -1,0 +1,16 @@
+-- CreateTable
+CREATE TABLE "Device" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "deletedAt" DATETIME DEFAULT CURRENT_TIMESTAMP,
+    "name" TEXT
+);
+
+-- CreateTable
+CREATE TABLE "History" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "deviceId" INTEGER,
+    "data" TEXT,
+    CONSTRAINT "History_deviceId_fkey" FOREIGN KEY ("deviceId") REFERENCES "Device" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+);

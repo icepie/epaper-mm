@@ -1,0 +1,28 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Device {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now()) // 创建时间
+  updatedAt DateTime  @updatedAt // 更新时间
+  deletedAt DateTime? @default(now()) // 删除时间
+  name      String?
+  histories History[]
+}
+
+model History {
+  id      Int     @id @default(autoincrement())
+  device  Device? @relation(fields: [deviceId], references: [id])
+  deviceId Int?
+  // 算了用base64吧
+  data    String?
+}
