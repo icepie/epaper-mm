@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
 
 import { Device } from '@prisma/client';
 import { DeviceService } from './device.service';
@@ -15,5 +16,17 @@ export class DeviceController {
   @Get('/list')
   async getDevices(): Promise<Device[]> {
     return this.deviceService.getDevices();
+  }
+
+  @Get('/display')
+  async display(@Res() res: Response) {
+    const buffer = await this.deviceService.display();
+
+    res.set({
+      'Content-Type': 'image/bmp',
+      'Content-Length': buffer.length,
+    });
+
+    res.send(buffer);
   }
 }
