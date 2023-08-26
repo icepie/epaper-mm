@@ -1,8 +1,12 @@
-import { createCanvas } from '@napi-rs/canvas';
+// import { createCanvas } from '@napi-rs/canvas';
+
+import { StaticCanvas, Rect, Textbox, Line } from 'fabric/node';
+
 import Jimp from 'jimp';
 import { Injectable } from '@nestjs/common';
 import { Device } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import { Readable } from 'node:stream';
 
 @Injectable()
 export class DeviceService {
@@ -19,34 +23,60 @@ export class DeviceService {
   }
 
   async display(): Promise<Buffer> {
-    const canvas = createCanvas(400, 300);
-    const ctx = canvas.getContext('2d');
+    const canvas = new StaticCanvas(null, { width: 400, height: 300 });
 
-    ctx.fillStyle = '#ffffff';
+    canvas.getNodeCanvas();
 
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // canvas.createPNGStream
 
-    ctx.lineWidth = 10;
-    ctx.strokeStyle = 'red';
-    ctx.fillStyle = 'red';
+    const rect = new Rect({
+      top: 50,
+      left: 50,
+      width: 150,
+      height: 70,
+      fill: '#aa96da',
+    });
 
-    // Wall
-    ctx.strokeRect(75, 140, 150, 110);
+    const text = new Textbox('Hello World', {
+      top: 50,
+      left: 50,
+      width: 150,
+      height: 70,
+      fill: '#aa96da',
+    });
 
-    // Door
-    ctx.fillRect(130, 190, 40, 60);
+    const line = new Line([50, 50, 200, 50], {
+      stroke: 'red',
+      strokeWidth: 5,
+    });
 
-    // Roof
-    ctx.beginPath();
-    ctx.moveTo(50, 140);
-    ctx.lineTo(150, 60);
-    ctx.lineTo(250, 140);
-    ctx.closePath();
-    ctx.stroke();
+    canvas.add(line);
 
-    const image = await Jimp.read(canvas.toBuffer('image/png'));
+    canvas.add(text);
+
+    canvas.add(rect);
+
+    canvas.renderAll();
+
+    console.log(canvas.toJSON());
+
+    // canvas.createPNGStream()
+    const png = canvas.createPNGStream();
+
+    const buff = await toBuffer(png);
+
+    const image = await Jimp.read(buff);
     // image.resize(400, 300);
 
     return image.getBufferAsync(Jimp.MIME_BMP);
   }
+}
+
+async function toBuffer(stream: Readable): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('error', reject);
+    stream.on('end', () => resolve(Buffer.concat(chunks)));
+  });
 }
