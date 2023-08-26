@@ -1,6 +1,6 @@
 // import { createCanvas } from '@napi-rs/canvas';
 
-import { StaticCanvas, Rect, Textbox, Line } from 'fabric/node';
+import { Canvas, Rect, Textbox, Line } from 'fabric/node';
 
 import Jimp from 'jimp';
 import { Injectable } from '@nestjs/common';
@@ -23,11 +23,9 @@ export class DeviceService {
   }
 
   async display(): Promise<Buffer> {
-    const canvas = new StaticCanvas(null, { width: 400, height: 300 });
+    const canvas = new Canvas(null, { width: 400, height: 300 });
 
-    canvas.getNodeCanvas();
-
-    // canvas.createPNGStream
+    canvas.backgroundColor = '#fff';
 
     const rect = new Rect({
       top: 50,
