@@ -1,12 +1,13 @@
-// import { createCanvas } from '@napi-rs/canvas';
-
-import { Canvas, Rect, Textbox, Line } from 'fabric/node';
+import { Canvas, Textbox, Line } from 'fabric/node';
 
 import Jimp from 'jimp';
 import { Injectable } from '@nestjs/common';
 import { Device } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
-import { Readable } from 'node:stream';
+
+const WHITE = '#FFFFFF';
+const RED = '#FF0000';
+const BLACK = '#000000';
 
 @Injectable()
 export class DeviceService {
@@ -25,26 +26,18 @@ export class DeviceService {
   async display(): Promise<Buffer> {
     const canvas = new Canvas(null, { width: 400, height: 300 });
 
-    canvas.backgroundColor = '#fff';
-
-    const rect = new Rect({
-      top: 50,
-      left: 50,
-      width: 150,
-      height: 70,
-      fill: '#aa96da',
-    });
+    canvas.backgroundColor = WHITE;
 
     const text = new Textbox('Hello World', {
       top: 50,
       left: 50,
       width: 150,
       height: 70,
-      fill: '#aa96da',
+      fill: RED,
     });
 
     const line = new Line([50, 50, 200, 50], {
-      stroke: 'red',
+      stroke: BLACK,
       strokeWidth: 5,
     });
 
@@ -52,29 +45,17 @@ export class DeviceService {
 
     canvas.add(text);
 
-    canvas.add(rect);
+    // canvas.add(rect);
 
     canvas.renderAll();
 
     console.log(canvas.toJSON());
 
-    // canvas.createPNGStream()
-    const png = canvas.createPNGStream();
+    const png = canvas.getNodeCanvas().toBuffer('image/png');
 
-    const buff = await toBuffer(png);
-
-    const image = await Jimp.read(buff);
+    const image = await Jimp.read(png);
     // image.resize(400, 300);
 
     return image.getBufferAsync(Jimp.MIME_BMP);
   }
-}
-
-async function toBuffer(stream: Readable): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    stream.on('data', (chunk) => chunks.push(chunk));
-    stream.on('error', reject);
-    stream.on('end', () => resolve(Buffer.concat(chunks)));
-  });
 }

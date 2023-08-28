@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@jimp/bmp": "^0.22.10",
     "@napi-rs/canvas": "^0.1.44",
     "@nestjs/common": "^9.4.3",
     "@nestjs/core": "^9.4.3",
@@ -31,7 +32,10 @@
     "fabric": "6.0.0-beta12",
     "jimp": "^0.22.10",
     "jsdom": "^22.1.0",
+    "nestjs-pino": "^3.4.0",
     "nestjs-prisma": "^0.22.0",
+    "pino-http": "^8.4.0",
+    "pino-pretty": "^10.2.0",
     "reflect-metadata": "^0.1.13",
     "roughjs": "^4.5.2",
     "rxjs": "^7.8.1"
