@@ -1,13 +1,17 @@
-import { Canvas, Textbox, Line } from 'fabric/node';
+import { fabric } from 'fabric';
 
 import Jimp from 'jimp';
 import { Injectable } from '@nestjs/common';
 import { Device } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import { streamToBuffer } from 'src/utils/stream';
+import { PNGStream } from 'canvas';
 
 const WHITE = '#FFFFFF';
 const RED = '#FF0000';
 const BLACK = '#000000';
+
+let gData = null;
 
 @Injectable()
 export class DeviceService {
@@ -23,37 +27,29 @@ export class DeviceService {
     return this.prisma.device.findMany();
   }
 
+  // 更新data
+  async changeData(data: any) {
+    gData = data;
+  }
+
   async display(): Promise<Buffer> {
-    const canvas = new Canvas(null, { width: 400, height: 300 });
+    const canvas = new fabric.StaticCanvas(null, { width: 400, height: 300 });
 
-    canvas.backgroundColor = WHITE;
+    try {
+      canvas.loadFromJSON(gData, () => {
+        console.log('loadFromJSON');
+        canvas.renderAll();
+        // console.log(a, o);
+      });
+    } catch (error: any) {
+      console.log(error);
+    }
 
-    const text = new Textbox('Hello World', {
-      top: 50,
-      left: 50,
-      width: 150,
-      height: 70,
-      fill: RED,
-    });
+    // // canvas.add(rect);
 
-    const line = new Line([50, 50, 200, 50], {
-      stroke: BLACK,
-      strokeWidth: 5,
-    });
+    const stream: PNGStream = await canvas.createPNGStream();
 
-    canvas.add(line);
-
-    canvas.add(text);
-
-    // canvas.add(rect);
-
-    canvas.renderAll();
-
-    console.log(canvas.toJSON());
-
-    const png = canvas.getNodeCanvas().toBuffer('image/png');
-
-    const image = await Jimp.read(png);
+    const image = await Jimp.read(await streamToBuffer(stream));
     // image.resize(400, 300);
 
     return image.getBufferAsync(Jimp.MIME_BMP);
