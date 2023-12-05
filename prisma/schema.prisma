@@ -10,19 +10,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 定义role
+
+model User {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now()) // 创建时间
+  updatedAt DateTime  @updatedAt // 更新时间
+  deletedAt DateTime? @default(now()) // 删除时间
+  role      String    @default("user")
+  username  String    @unique
+  password  String
+  devices   Device[]
+}
+
 model Device {
   id        Int       @id @default(autoincrement())
   createdAt DateTime  @default(now()) // 创建时间
   updatedAt DateTime  @updatedAt // 更新时间
   deletedAt DateTime? @default(now()) // 删除时间
-  name      String?
+  name      String  @default("未命名设备")
   histories History[]
+  user      User?      @relation(fields: [userId], references: [id])
+  userId    Int?
 }
 
 model History {
-  id      Int     @id @default(autoincrement())
-  device  Device? @relation(fields: [deviceId], references: [id])
-  deviceId Int?
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now()) // 创建时间
+  updatedAt DateTime  @updatedAt // 更新时间
+  deletedAt DateTime? @default(now()) // 删除时间
+  device    Device    @relation(fields: [deviceId], references: [id])
+  deviceId  Int
   // 算了用base64吧
-  data    String?
+  data      String?
 }

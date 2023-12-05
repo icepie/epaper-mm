@@ -39,7 +39,7 @@ export class DeviceController {
   @UseInterceptors(FileInterceptor('file'))
   async changeData(
     @UploadedFile() file: Express.Multer.File,
-    @Body() _fileInfo: CreateFileManageDto,
+    @Body() _: CreateFileManageDto,
   ) {
     const data = JSON.parse(file.buffer.toString());
 
