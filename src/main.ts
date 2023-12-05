@@ -35,7 +35,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
   app.enableCors();
-  app.useLogger(app.get(Logger));
+  // app.useLogger(app.get(Logger));
 
   const config = new DocumentBuilder()
     .setTitle('e-paper example')

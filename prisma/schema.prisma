@@ -18,6 +18,8 @@ model User {
   updatedAt DateTime  @updatedAt // 更新时间
   deletedAt DateTime? @default(now()) // 删除时间
   role      String    @default("user")
+  name      String    @default("")
+  avatar    String    @default("")
   username  String    @unique
   password  String
   devices   Device[]
@@ -28,9 +30,9 @@ model Device {
   createdAt DateTime  @default(now()) // 创建时间
   updatedAt DateTime  @updatedAt // 更新时间
   deletedAt DateTime? @default(now()) // 删除时间
-  name      String  @default("未命名设备")
+  name      String    @default("未命名设备")
   histories History[]
-  user      User?      @relation(fields: [userId], references: [id])
+  user      User?     @relation(fields: [userId], references: [id])
   userId    Int?
 }
 

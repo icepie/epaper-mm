@@ -18,6 +18,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       : status >= 500
       ? 'Internal server error'
       : 'Bad request';
+
     const errorResponse = {
       code: status,
       message,
