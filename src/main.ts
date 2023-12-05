@@ -4,6 +4,8 @@ import { AppModule } from './app.module';
 import { Logger } from 'nestjs-pino';
 // import { PrismaClient } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import { TransformInterceptor } from './global/interceptor/transform/transform.interceptor';
+import { HttpExceptionFilter } from './global/filter/http-exception/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -30,6 +32,8 @@ async function bootstrap() {
   //   process.exit(1);
   // }
 
+  app.useGlobalInterceptors(new TransformInterceptor());
+  app.useGlobalFilters(new HttpExceptionFilter());
   app.enableCors();
   app.useLogger(app.get(Logger));
 
