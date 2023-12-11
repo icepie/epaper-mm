@@ -10,27 +10,24 @@ import { HttpExceptionFilter } from './global/filter/http-exception/http-excepti
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
-  // const prismaService: PrismaService = app.get(PrismaService);
+  const prismaService: PrismaService = app.get(PrismaService);
 
   // // 判断是否存在管理员用户
-  // const adminUser = await prismaService.user.findFirst({
-  //   where: { username: 'admin' },
-  // });
+  const adminUser = await prismaService.user.findFirst({
+    where: { username: 'admin' },
+  });
 
-  // if (!adminUser) {
-  //   // 创建管理员用户
-  //   await prismaService.user.create({
-  //     data: {
-  //       role: 'admin',
-  //       username: 'admin',
-  //       password: '123456',
-  //     },
-  //   });
-  //   console.log('Admin user created successfully.');
-  // } else {
-  //   // 退出
-  //   process.exit(1);
-  // }
+  if (!adminUser) {
+    // 创建管理员用户
+    await prismaService.user.create({
+      data: {
+        role: 'admin',
+        username: 'admin',
+        password: '123456',
+      },
+    });
+    console.log('Admin user created successfully.');
+  }
 
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
