@@ -13,11 +13,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response: Response = ctx.getResponse();
     const status = exception.getStatus();
 
-    const message = exception.message
-      ? exception.message
-      : status >= 500
-      ? 'Internal server error'
-      : 'Bad request';
+    console.log('exception', exception);
+
+    // const message = exception.message ? exception.message : '请求失败';
+    // if (!message) {
+
+    let tmpMessage =
+      exception.getResponse()['message'] || exception.message || '请求失败';
+
+    if (typeof tmpMessage === 'object') {
+      tmpMessage = tmpMessage[0];
+    }
+
+    const message = tmpMessage;
+    // }
 
     const errorResponse = {
       code: status,

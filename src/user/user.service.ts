@@ -11,20 +11,24 @@ export class UserService {
   async getUsers(req: GetUserListReq): Promise<GetUserListResp> {
     const { page, pageSize, search } = req;
 
-    const where = {
-      OR: [
-        {
-          username: {
-            contains: search,
+    const where = {};
+
+    if (search) {
+      Object.assign(where, {
+        OR: [
+          {
+            username: {
+              contains: search,
+            },
           },
-        },
-        {
-          name: {
-            contains: search,
+          {
+            name: {
+              contains: search,
+            },
           },
-        },
-      ],
-    };
+        ],
+      });
+    }
 
     const [users, total] = await Promise.all([
       this.prisma.user.findMany({
@@ -45,7 +49,7 @@ export class UserService {
     ]);
 
     return {
-      users,
+      list: users,
       total,
     };
   }
